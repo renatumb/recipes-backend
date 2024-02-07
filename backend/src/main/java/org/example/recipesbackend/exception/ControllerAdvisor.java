@@ -32,4 +32,13 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity(body, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(RecipeNotFoundException.class)
+    public ResponseEntity recipeNotFound(){
+        Map<String, String> body = new HashMap();
+        body.put("message", "Recipe not found for the given ID");
+        body.put("timestamp", String.valueOf(new Date()));
+
+        return new ResponseEntity(body,HttpStatus.NOT_FOUND);
+    }
 }

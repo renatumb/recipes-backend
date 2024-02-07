@@ -55,7 +55,7 @@ public class UserController {
                     @Parameter(name = "fields", description = "Sortable columns: id, lastName, firstName, email. Use comma when utilizing more than one",
                             examples = {@ExampleObject(name = "Order by id", value = "id"), @ExampleObject(name = "Order by First Name", value = "firstName"), @ExampleObject(name = "Order by First name then Last name", value = "firstName,lastName")})})
 
-    @ApiResponse(responseCode = "204", description = "Successfully removed", useReturnTypeSchema = false)
+    @ApiResponse(responseCode = "200", description = "Success", useReturnTypeSchema = false)
     public ResponseEntity<Page<User>> getAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                   @RequestParam(value = "size", defaultValue = "5") int size,
                                                   @RequestParam(value = "sort", defaultValue = "asc") String sort,
