@@ -3,7 +3,6 @@ package org.example.recipesbackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,7 +15,6 @@ import org.example.recipesbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -40,7 +38,10 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Use this endpoint for User Removal")
-    @ApiResponse(responseCode = "204", description = "Successfully removed", useReturnTypeSchema = false)
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Successfully removed"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity removeUser(@PathVariable Long id) {
         userService.removeUser(id);
         return ResponseEntity.noContent().build();
@@ -55,7 +56,10 @@ public class UserController {
                     @Parameter(name = "fields", description = "Sortable columns: id, lastName, firstName, email. Use comma when utilizing more than one",
                             examples = {@ExampleObject(name = "Order by id", value = "id"), @ExampleObject(name = "Order by First Name", value = "firstName"), @ExampleObject(name = "Order by First name then Last name", value = "firstName,lastName")})})
 
-    @ApiResponse(responseCode = "200", description = "Success", useReturnTypeSchema = false)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", useReturnTypeSchema = false),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    })
     public ResponseEntity<Page<User>> getAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                   @RequestParam(value = "size", defaultValue = "5") int size,
                                                   @RequestParam(value = "sort", defaultValue = "asc") String sort,
@@ -64,6 +68,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Retrieve user by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "User not found for the given ID"),
+    })
     public ResponseEntity<User> getUser(@NotNull @PathVariable(value = "id") Long id) {
         return ResponseEntity.ok().body(userService.getUserById(id));
     }
