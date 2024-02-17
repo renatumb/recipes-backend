@@ -4,9 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -15,13 +16,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler({UserNotFoundException.class, UsernameNotFoundException.class})
     public ResponseEntity userNotFound() {
         Map<String, String> body = new HashMap();
         body.put("message", "User not found for the given ID");
         body.put("timestamp", String.valueOf(new Date()));
 
-        return new ResponseEntity(body,HttpStatus.NOT_FOUND);
+        return new ResponseEntity(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
@@ -34,11 +35,18 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(RecipeNotFoundException.class)
-    public ResponseEntity recipeNotFound(){
+    public ResponseEntity recipeNotFound() {
         Map<String, String> body = new HashMap();
         body.put("message", "Recipe not found for the given ID");
         body.put("timestamp", String.valueOf(new Date()));
+        return new ResponseEntity(body, HttpStatus.NOT_FOUND);
+    }
 
-        return new ResponseEntity(body,HttpStatus.NOT_FOUND);
+    @ExceptionHandler({BadCredentialsException.class})
+    public ResponseEntity BadCredentialsException() {
+        Map<String, String> body = new HashMap();
+        body.put("message", "Invalid credentials");
+        body.put("timestamp", String.valueOf(new Date()));
+        return new ResponseEntity(body, HttpStatus.UNAUTHORIZED);
     }
 }
