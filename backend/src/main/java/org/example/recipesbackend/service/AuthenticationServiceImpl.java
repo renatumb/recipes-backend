@@ -1,5 +1,7 @@
 package org.example.recipesbackend.service;
 
+import java.util.Arrays;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.example.recipesbackend.config.jwt.CustomUserDetailsService;
 import org.example.recipesbackend.config.jwt.JwtProvider;
@@ -27,6 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Override
     public User signUp(User user) {
         log.debug(">>>>>    AuthenticationServiceImpl.signUp() ");
         userRepository.findByEmail(user.getEmail()).ifPresent(u -> {
@@ -43,6 +46,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return newUser;
     }
 
+    @Override
     public String signIn(String email, String password) {
         log.debug(">>>>>    AuthenticationServiceImpl.signIn() ");
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
@@ -52,6 +56,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authenticate(userDetails.getUsername(), userDetails.getPassword());
     }
 
+    @Override
+    public boolean validateToken(String authorizationHeader) {
+        String email = "";
+        String token;
+
+        if (Objects.isNull(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")) {
+            return false;
+        }
+
+        token = authorizationHeader.substring(7);
+        try {
+            email = jwtProvider.getEmailFromJwtToken(token);
+        } catch (Exception ex) {
+            log.warn(">>>>>    AuthenticationServiceImpl.validateToken()\n" + "MESSAGE:\t" + ex.getMessage() + "\nTOKEN:\t" + token + "\nCAUSE:\t" +  ex.getCause() );
+            ex.printStackTrace();
+            return false;
+        }
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
+        return jwtProvider.isTokenValid(token, userDetails);
+    }
     private String authenticate(String userName, String password) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userName, password, null);
         return jwtProvider.generateToken(authentication);
