@@ -1,6 +1,7 @@
 package org.example.recipesbackend.service;
 
 import jakarta.transaction.Transactional;
+import org.example.recipesbackend.config.jwt.JwtProvider;
 import org.example.recipesbackend.exception.ResourceAlreadyExistsException;
 import org.example.recipesbackend.exception.UserNotFoundException;
 import org.example.recipesbackend.model.User;
@@ -17,6 +18,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     public User createUser(User u) {
         userRepository.findByEmail(u.getEmail()).ifPresent(user -> {

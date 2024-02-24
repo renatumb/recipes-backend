@@ -60,6 +60,10 @@ public class RecipeServiceImpl implements RecipeService {
             oldRecipe.setImage(recipe.getImage());
         }
 
+        if( recipe.getVegetarian() != null ){
+            oldRecipe.setVegetarian(recipe.getVegetarian() );
+        }
+
         return recipeRespository.save(oldRecipe);
     }
 

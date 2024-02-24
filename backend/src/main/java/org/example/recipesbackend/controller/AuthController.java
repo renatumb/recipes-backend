@@ -13,12 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.recipesbackend.model.User;
 import org.example.recipesbackend.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -63,6 +61,19 @@ public class AuthController {
         dataResponse.put("message", "Login successfully");
 
         return ResponseEntity.ok(dataResponse);
+    }
+
+    @Operation(summary = "End point to verify token's validity")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully LoggedIn", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "401", description = "Authentication failed", useReturnTypeSchema = false)})
+    @GetMapping
+    public ResponseEntity isTokenValid(@NotNull @RequestHeader("Authorization") String authorizationHeader) {
+        boolean isTokenValid = authenticationService.validateToken(authorizationHeader);
+        Map dataResponse = new HashMap();
+        dataResponse.put("token", authorizationHeader.substring(7));
+        dataResponse.put("valid", isTokenValid);
+        return isTokenValid ? ResponseEntity.ok().body(dataResponse) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
     private record LoginData(String email, String password) {
