@@ -40,8 +40,8 @@ public class AppConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(getCorsConfiguration()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers("/swagger-ui/**", "/v3/**", "/auth/**" ).permitAll()
-                                .requestMatchers("/recipe/**", "/users/**").authenticated()
+                                .requestMatchers("/api/swagger-ui/**", "/api/v3/**", "/v3/**", "/api/auth/**", "/api/status", "/api/doc" ).permitAll()
+                                .requestMatchers("/api/recipe/**", "/api/users/**").authenticated()
                                 .anyRequest().denyAll()
                 )
                 .addFilterBefore( jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -55,16 +55,13 @@ public class AppConfig {
         return new CorsConfigurationSource() {
             @Override
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                //UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
                 CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-                corsConfiguration.setAllowCredentials(true);
-                corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
+                //corsConfiguration.setAllowCredentials(true);
+                corsConfiguration.setAllowedOrigins(List.of("*"));
                 corsConfiguration.setAllowedMethods(List.of(GET.name(), POST.name(), PUT.name(), PATCH.name(), DELETE.name(), OPTIONS.name()));
                 corsConfiguration.setAllowedHeaders(List.of("X-Requested-With", ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS));
                 corsConfiguration.setExposedHeaders(List.of("X-Requested-With", ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS));
-
-                //urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 
                 return corsConfiguration;
             }

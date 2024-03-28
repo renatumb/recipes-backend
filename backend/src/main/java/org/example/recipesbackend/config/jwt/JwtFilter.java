@@ -28,10 +28,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.debug(">>>>>    JwtFilter.doFilterInternal() ");
+        log.info(">>>>>    JwtFilter.doFilterInternal() ");
 
+        log.info(" -------------------------------------------------------------------\n\n " );
+        log.info(" request.getRequestURL()>>>> " + request.getRequestURL() );
+        log.info(" request.getQueryString()>>>> " + request.getQueryString() );
+        log.info("\n\n\n" );
         MAIN_IF:
-        if (request.getServletPath().matches("(/users.*)|(/recipe.*)")) {
+        if (request.getServletPath().matches("(/api/users.*)|(/api/recipe.*)")) {
             log.debug("Matched filter");
 
             String authHeader = request.getHeader("Authorization");
