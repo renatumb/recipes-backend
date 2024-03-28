@@ -33,3 +33,5 @@ build/
 ### VS Code ###
 .vscode/
 /config.properties
+/deploy.sh
+/config-prod.properties
